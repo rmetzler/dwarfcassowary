@@ -20,7 +20,7 @@ var urlPrefix = Config.codeBase  + 'apps/dwarfcassowary/js/';
 'ClSimplexSolver.js',
 'CL.js',
 'Timer.js',
-//'ClTests.js'
+'ClTests.js'
 ].forEach (function (file) {
   JSLoader.loadJs(urlPrefix + file); //, function(){}, true);
   
