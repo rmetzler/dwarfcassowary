@@ -1,7 +1,8 @@
 print = function () {};
 
 //var urlPrefix = Config.codeBase.match(/http.?:\/\/[^\/]*(.*)/)[1] + 'apps/dwarfcassowary/js/';
-var urlPrefix = Config.codeBase  + 'apps/dwarfcassowary/js/';
+//var urlPrefix = Config.codeBase  + 'apps/dwarfcassowary/js/';
+var urlPrefix = 'https://raw.github.com/rmetzler/dwarfcassowary/master/js/';
 
 // no more mootools. requires Object extensions from lively/Base.js instead
 [
