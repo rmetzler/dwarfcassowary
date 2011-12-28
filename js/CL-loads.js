@@ -5,6 +5,15 @@ print = function () {};
 //var urlPrefix = 'https://raw.github.com/rmetzler/dwarfcassowary/master/js/';
 var urlPrefix = 'http://localhost:8888/';
 
+function block(millis) {
+  var date = new Date();
+  var curDate = null;
+
+  do { curDate = new Date(); } 
+  while(curDate-date < millis);
+}
+
+
 // no more mootools. requires Object extensions from lively/Base.js instead
 [
 'jshashtable-2.1-fbo.js',
@@ -25,7 +34,10 @@ var urlPrefix = 'http://localhost:8888/';
 'ClTests.js'
 ].forEach (function (file) {
   JSLoader.loadJs(urlPrefix + file); //, function(){}, true);
-  
+  // JSLoader doesn't work properly in sync mode,
+  // so I need to block for a small amount of time
+  // while dependencies are loaded
+  block(100); 
 })
 
 
