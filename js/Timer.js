@@ -1,5 +1,5 @@
 
-Object.subclass('Timer', 'default category', {
+ClObject.subclass('Timer', 'default category', {
   initialize: function() {
     this._timerIsRunning = false;
     this._elapsedMs = 0;

@@ -1,5 +1,5 @@
 
-Object.subclass('ClTableau', 'default category', {
+ClObject.subclass('ClTableau', 'default category', {
   /* FIELDS:
       var _columns //Hashtable of vars -> set of vars
       var _rows //Hashtable of vars -> expr

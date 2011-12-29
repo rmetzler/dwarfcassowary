@@ -1,7 +1,7 @@
 // FILE: EDU.Washington.grad.gjb.cassowary
 // package EDU.Washington.grad.gjb.cassowary;
 
-Object.subclass('ExCLError', 'default category', {
+ClObject.subclass('ExCLError', 'default category', {
   description: function() {
     return "(ExCLError) An error has occured in CL";
   },

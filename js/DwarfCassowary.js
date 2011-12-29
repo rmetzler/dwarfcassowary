@@ -2,7 +2,7 @@ module('apps.dwarfcassowary.js.DwarfCassowary').requires('apps.dwarfcassowary.js
 // FILE: EDU.Washington.grad.gjb.cassowary
 // package EDU.Washington.grad.gjb.cassowary;
 
-Object.subclass('ExCLError', 'default category', {
+ClObject.subclass('ExCLError', 'default category', {
   description: function() {
     return "(ExCLError) An error has occured in CL";
   },
@@ -62,7 +62,7 @@ ExCLError.subclass('ExCLTooDifficult', 'default category', {
 
 
 
-Object.subclass('ClSymbolicWeight', 'default category', {
+ClObject.subclass('ClSymbolicWeight', 'default category', {
   initialize: function(w1, w2, w3) {
     this._values = new Array(w1, w2, w3);
   },
@@ -156,7 +156,7 @@ ClSymbolicWeight.clsZero = new ClSymbolicWeight(0, 0, 0);
 // FILE: EDU.Washington.grad.gjb.cassowary
 // package EDU.Washington.grad.gjb.cassowary;
 
-Object.subclass('ClStrength', 'default category', {
+ClObject.subclass('ClStrength', 'default category', {
 
   /* FIELDS:
      private String _name
@@ -204,7 +204,7 @@ ClStrength.medium = new ClStrength("medium", 0.0, 1.0, 0.0);
 ClStrength.weak = new ClStrength("weak", 0.0, 0.0, 1.0);
 
 
-Object.subclass('ClAbstractVariable', 'default category', {
+ClObject.subclass('ClAbstractVariable', 'default category', {
   initialize: function(a1,a2) {
     this.hash_code = ClAbstractVariable.iVariableNumber++;
     if (typeof(a1) == "string" || (a1 == null)) {
@@ -395,7 +395,7 @@ ClAbstractVariable.subclass('ClSlackVariable', 'default category', {
   },
 });
 
-Object.subclass('ClPoint', 'default category', {
+ClObject.subclass('ClPoint', 'default category', {
   initialize: function(x, y, suffix) {
     if (x instanceof ClVariable) {
       this.x = x;
@@ -449,7 +449,7 @@ Object.subclass('ClPoint', 'default category', {
 // FILE: EDU.Washington.grad.gjb.cassowary
 // package EDU.Washington.grad.gjb.cassowary;
 
-Object.subclass('ClLinearExpression', 'default category', {
+ClObject.subclass('ClLinearExpression', 'default category', {
   /* FIELDS:
      private ClDouble _constant
      private Hashtable _terms
@@ -697,7 +697,7 @@ Object.subclass('ClLinearExpression', 'default category', {
 // Linear constraints are in ClLinearConstraint.js
 
 
-Object.subclass('ClConstraint', 'default category', {
+ClObject.subclass('ClConstraint', 'default category', {
   /* FIELDS:
     var _strength
     var _weight
@@ -950,7 +950,7 @@ ClLinearConstraint.subclass('ClLinearEquation', 'default category', {
   },
 });
 
-Object.subclass('ClEditInfo', 'default category', {
+ClObject.subclass('ClEditInfo', 'default category', {
   /* FIELDS:
       var cn //ClConstraint
       var clvEditPlus //ClSlackVariable
@@ -989,7 +989,7 @@ Object.subclass('ClEditInfo', 'default category', {
   }
 });
 
-Object.subclass('ClTableau', 'default category', {
+ClObject.subclass('ClTableau', 'default category', {
   /* FIELDS:
       var _columns //Hashtable of vars -> set of vars
       var _rows //Hashtable of vars -> expr
@@ -2058,7 +2058,7 @@ CL.GEQ = 1;
 CL.LEQ = 2;
 
 
-Object.subclass('Timer', 'default category', {
+ClObject.subclass('Timer', 'default category', {
   initialize: function() {
     this._timerIsRunning = false;
     this._elapsedMs = 0;

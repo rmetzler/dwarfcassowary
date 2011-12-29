@@ -106,7 +106,7 @@ module('apps.dwarfcassowary.js.Hashtable').requires().toRun(function() {
 
 	/// ---------------- Bucket
 
-        Object.subclass('Bucket', 'default category', {
+        ClObject.subclass('Bucket', 'default category', {
 		initialize: function(hash, firstKey, firstValue, equalityFunction) {
 	        	this[0] = hash;
 			this.entries = [];
@@ -231,7 +231,7 @@ module('apps.dwarfcassowary.js.Hashtable').requires().toRun(function() {
 
 	/*----------------------------------------------------------------------------------------------------------------*/
 
-	Object.subclass('Hashtable', 'default category', {
+	ClObject.subclass('Hashtable', 'default category', {
 		initialize: function(hashingFunctionParam, equalityFunctionParam) {
 			this.hashingFunctionParam = hashingFunctionParam;
 			this.equalityFunctionParam = equalityFunctionParam;

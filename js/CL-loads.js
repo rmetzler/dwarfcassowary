@@ -16,6 +16,7 @@ function block(millis) {
 
 // no more mootools. requires Object extensions from lively/Base.js instead
 [
+'ClObject.js',
 'jshashtable-2.1-fbo.js',
 'jshashset-fbo.js',
 'ExCLError.js',

@@ -1,7 +1,7 @@
 // FILE: EDU.Washington.grad.gjb.cassowary
 // package EDU.Washington.grad.gjb.cassowary;
 
-Object.subclass('ClLinearExpression', 'default category', {
+ClObject.subclass('ClLinearExpression', 'default category', {
   /* FIELDS:
      private ClDouble _constant
      private Hashtable _terms

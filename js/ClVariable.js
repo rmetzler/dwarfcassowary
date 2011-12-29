@@ -1,5 +1,5 @@
 
-Object.subclass('ClAbstractVariable', 'default category', {
+ClObject.subclass('ClAbstractVariable', 'default category', {
   initialize: function(a1,a2) {
     this.hash_code = ClAbstractVariable.iVariableNumber++;
     if (typeof(a1) == "string" || (a1 == null)) {

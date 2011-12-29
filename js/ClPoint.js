@@ -1,5 +1,5 @@
 
-Object.subclass('ClPoint', 'default category', {
+ClObject.subclass('ClPoint', 'default category', {
   initialize: function(x, y, suffix) {
     if (x instanceof ClVariable) {
       this.x = x;

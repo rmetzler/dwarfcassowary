@@ -1,7 +1,7 @@
 // FILE: EDU.Washington.grad.gjb.cassowary
 // package EDU.Washington.grad.gjb.cassowary;
 
-Object.subclass('ClStrength', 'default category', {
+ClObject.subclass('ClStrength', 'default category', {
 
   /* FIELDS:
      private String _name

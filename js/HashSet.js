@@ -33,7 +33,7 @@
 
 module('apps.dwarfcassowary.js.HashSet').requires('apps.dwarfcassowary.js.Hashtable').toRun(function() {
 
-Object.subclass('HashSet', 'default category', {
+ClObject.subclass('HashSet', 'default category', {
     initialize: function(hashingFunction, equalityFunction) {
         this.hashingFunction = hashingFunction;
 	this.equalityFunction = equalityFunction;

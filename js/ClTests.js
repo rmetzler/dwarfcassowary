@@ -1,5 +1,5 @@
 
-Object.subclass('ClTests', 'default category', {
+ClObject.subclass('ClTests', 'default category', {
   initialize: function() {
   },
 

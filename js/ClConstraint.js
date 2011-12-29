@@ -5,7 +5,7 @@
 // Linear constraints are in ClLinearConstraint.js
 
 
-Object.subclass('ClConstraint', 'default category', {
+ClObject.subclass('ClConstraint', 'default category', {
   /* FIELDS:
     var _strength
     var _weight
