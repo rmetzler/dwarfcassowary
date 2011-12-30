@@ -112,6 +112,11 @@ ClConstraint.subclass('ClEditOrStayConstraint', 'default category', {
   setVariable: function(v /*ClVariable*/) {
     this._variable = v;
   },
+  
+  toString: function() {
+    return $super();
+  },
+  
 });
 
 
