@@ -59,7 +59,7 @@
 
   for (d in tests) {
     t = tests[d];
-    console.log(t() ? '.' : "\n" + d + " FAILED\n");
+    console.log(t() ? d + ' ok' : "\n" + d + " FAILED\n");
   }
 
 }).call(this);
