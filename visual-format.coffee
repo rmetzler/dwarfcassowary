@@ -12,6 +12,7 @@ grammar=
        ["H:",                       "return 'H:';"],
        ["V:",                       "return 'V:';"],
        ["@",                        "return '@';"],
+       ["-",                        "return '-';"],
        ["\\|",                      "return '|';"],
        ["\\[",                      "return '[';"],
        ["]",                        "return ']';"],
@@ -20,33 +21,33 @@ grammar=
        ["==",                       "return '==';"],
        [">=",                       "return '>=';"],
        ["<=",                       "return '<=';"],
-       ["-",                        "return '-';"],
        [",",                        "return ',';"],
        ["$",                        "return 'EOF';"]
     ]
   startSymbol: "visualFormatString", 
   bnf:
-    'visualFormatString': ['left_connection_to_superview view connection_to_view right_connection_to_superview']
+    'visualFormatString': ['left_connection_to_superview view more_connections']
     'orientation': ['', 'H:', 'V:']
     'superview': ['|']
     'view': ['[ viewName predicateListWithParens ]']
+    'more_connections': ['EOF', 'right_connection_to_superview', 'connection_to_view']
     'left_connection_to_superview' : ['', 'superview connection']
-    'right_connection_to_superview' : ['', 'connection superview']
-    'connection_to_view': ['', 'connection view connection_to_view']
-    'connection': ['','-','-predicateList-'] 
+    'right_connection_to_superview' : ['connection superview EOF']
+    'connection_to_view': ['connection view EOF', 'connection view connection_to_view']
+    'connection': ['','-','- predicateList -'] 
     
     'predicateList': ['simplePredicate','predicateListWithParens']
     'simplePredicate': ['metricName','positiveNumber']
-    'predicateListWithParens': ['', '(predicate more_predicates)']
+    'predicateListWithParens': ['', '( predicate more_predicates )']
     'more_predicates':['', ', predicate']
-    'predicate': ['objectOfPredicate','relation objectOfPredicate', 'objectOfPredicate @priority', 'relation objectOfPredicate @priority']
+    'predicate': ['objectOfPredicate','relation objectOfPredicate', 'objectOfPredicate @ priority', 'relation objectOfPredicate @priority']
     
     'relation': ['==','<=','>=']
     'objectOfPredicate': ['constant','viewName']
     'priority': ['metricName', 'number']
     'constant': ['metricName', 'number']
     'viewName': ['IDENTIFIER', "$$ = 'yytext';"]
-    
+    'number'  : ['NUMBER']
 ###
     <viewName>
     Parsed as a C identifier.
@@ -65,6 +66,8 @@ grammar=
 
 parser = new jison.Parser(grammar);
 #console.log parser
-parser.parse '|-[button]-|'
 parser.parse('[button]')
+parser.parse '[button]-[textfield]'
+parser.parse '|-[button]-|'
+parser.parse '|-[button (>= 50) ]-|'
 #parser.lexer = new Lexer(lexData);
