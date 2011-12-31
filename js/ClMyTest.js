@@ -1,6 +1,7 @@
 (function() {
   var d, t, tests;
-
+  var print = console.log;
+  
   tests = {
     A_plus_B_plus_C: (function(){
       var width = new ClVariable("width",100);
@@ -50,9 +51,10 @@
       solver.addConstraint(new ClLinearEquation(b.width, c.width));
 
       width.value();
-      a.width.value();
-      b.width.value();
-      c.width.value();
+      console.log(a.x.value() + " - " + a.width.value());
+      console.log(b.x.value() + " - " + b.width.value());
+      console.log(c.x.value() + " - " + c.width.value());
+      
       return true;
     }),
   };
