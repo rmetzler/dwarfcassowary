@@ -27,28 +27,49 @@ grammar=
   startSymbol: "visualFormatString", 
   bnf:
     'visualFormatString': ['orientation left_connection_to_superview view more_connections']
-    'orientation': ['', 'H:', 'V:']
-    'superview': ['|']
-    'view': ['[ viewName predicateListWithParens ]']
+    'orientation': [
+      ['',   "/* x and width */"] 
+      ['H:', "/* x and width */"] 
+      ['V:', "/* y and height */"]
+    ]
+    'view': [
+      ['[ viewName predicateListWithParens ]', "/* find morph viewName and add Constraints */"]
+    ]
     'more_connections': ['EOF', 'right_connection_to_superview', 'connection_to_view']
-    'left_connection_to_superview' : ['', 'superview connection']
-    'right_connection_to_superview' : ['connection superview EOF']
-    'connection_to_view': ['connection view EOF', 'connection view connection_to_view']
-    'connection': ['','-','- predicateList -'] 
+    'left_connection_to_superview' : [
+      ['', '/* no constraint */']
+      ['| connection', '/* connect to superview */']
+    ]
+    'right_connection_to_superview' : [
+      ['connection | EOF', '/* connect to superview */']
+    ]
+    'connection_to_view': [
+      ['connection view EOF', '/* should add both, connection and view constraints */']
+      ['connection view connection_to_view', '/* should add both, connection and view constraints */']
+      ]
+
+    'connection': [
+      ['', '/* space equals 0 */']
+      ['-', '/* default space constraints */']
+      ['- predicateList -', '/* space has predicateList constraints */']
+    ] 
     
     'predicateList': ['simplePredicate','predicateListWithParens']
     'simplePredicate': ['metricName','number']
     'predicateListWithParens': ['', '( predicate more_predicates )']
     'more_predicates':['', ', predicate more_predicates']
-    'predicate': ['objectOfPredicate','relation objectOfPredicate', 'objectOfPredicate @ priority', 'relation objectOfPredicate @priority']
+    'predicate': ['objectOfPredicate','relation objectOfPredicate', 'objectOfPredicate @ priority', 'relation objectOfPredicate @ priority']
     
-    'relation': ['==','<=','>=']
+    'relation': [
+      ['==', '/* equal*/']
+      ['<=', '/* greater or equal*/']
+      ['>=', '/* greater or equal*/']
+    ]
     'objectOfPredicate': ['constant','viewName']
     'priority': ['metricName', 'number']
     'constant': ['metricName', 'number']
-    'viewName': ['IDENTIFIER', "$$ = 'yytext';"]
-    'viewName': ['IDENTIFIER', "$$ = 'yytext';"]
-    'number'  : ['NUMBER']
+    'viewName': [['IDENTIFIER', "$$ = 'yytext';"]]
+    'number'  : [['NUMBER', "$$ = 'yytext'; /*number*/"]]
 
 ###
     <viewName>
@@ -60,13 +81,14 @@ grammar=
 
     <number>
     As parsed by strtod_l, with the C locale.
-    
-    
 ###
 
 
 
-parser = new jison.Parser(grammar);
+parser = new jison.Parser(grammar)
+parserSource = parser.generate()
+#console.log parserSource
+
 #console.log parser
 parser.parse('[button]')
 parser.parse '[button]-[textfield]'
