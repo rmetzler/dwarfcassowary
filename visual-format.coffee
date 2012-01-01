@@ -7,8 +7,6 @@ grammar=
   lex: 
     "rules": [
        ["\\s+",                     "/* skip whitespace */"],
-       ["[0-9]+(?:\\.[0-9]+)?\\b",  "return 'NUMBER';"],
-       ["[_A-Za-z][_A-Za-z0-9]*\\b","return 'IDENTIFIER';"],
        ["H:",                       "return 'H:';"],
        ["V:",                       "return 'V:';"],
        ["@",                        "return '@';"],
@@ -23,10 +21,12 @@ grammar=
        ["<=",                       "return '<=';"],
        [",",                        "return ',';"],
        ["$",                        "return 'EOF';"]
+       ["[0-9]+(?:\\.[0-9]+)?\\b",  "return 'NUMBER';"],
+       ["[_A-Za-z][_A-Za-z0-9]*\\b","return 'IDENTIFIER';"],
     ]
   startSymbol: "visualFormatString", 
   bnf:
-    'visualFormatString': ['left_connection_to_superview view more_connections']
+    'visualFormatString': ['orientation left_connection_to_superview view more_connections']
     'orientation': ['', 'H:', 'V:']
     'superview': ['|']
     'view': ['[ viewName predicateListWithParens ]']
@@ -37,9 +37,9 @@ grammar=
     'connection': ['','-','- predicateList -'] 
     
     'predicateList': ['simplePredicate','predicateListWithParens']
-    'simplePredicate': ['metricName','positiveNumber']
+    'simplePredicate': ['metricName','number']
     'predicateListWithParens': ['', '( predicate more_predicates )']
-    'more_predicates':['', ', predicate']
+    'more_predicates':['', ', predicate more_predicates']
     'predicate': ['objectOfPredicate','relation objectOfPredicate', 'objectOfPredicate @ priority', 'relation objectOfPredicate @priority']
     
     'relation': ['==','<=','>=']
@@ -47,7 +47,9 @@ grammar=
     'priority': ['metricName', 'number']
     'constant': ['metricName', 'number']
     'viewName': ['IDENTIFIER', "$$ = 'yytext';"]
+    'viewName': ['IDENTIFIER', "$$ = 'yytext';"]
     'number'  : ['NUMBER']
+
 ###
     <viewName>
     Parsed as a C identifier.
@@ -70,4 +72,12 @@ parser.parse('[button]')
 parser.parse '[button]-[textfield]'
 parser.parse '|-[button]-|'
 parser.parse '|-[button (>= 50) ]-|'
+parser.parse '|-50-[orchidbox]-50-|'
+parser.parse 'V:[topField]-10-[bottomField]'
+parser.parse '[maroonView][oceanView]'
+parser.parse '[button(100@20)]'
+parser.parse '[button1(==button2)]'
+parser.parse '[flexibleButton(>=70,<=100)]'
+parser.parse '|-[find]-[findNext]-[findField(>=20)]'
+
 #parser.lexer = new Lexer(lexData);
