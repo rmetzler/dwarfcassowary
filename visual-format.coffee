@@ -48,29 +48,70 @@ grammar=
             $$ = ['view',$2,$3]
             """]
     ]
+    
     'left_connection_to_superview' : [
       ['', '/* no constraint */']
-      ['| connection', '/* connect to superview */']
+      ['| connection', """
+                       /* connect to superview */
+                       $$ = ['left-superview-connect', $2];
+                       """]
     ]
+    
     'more_connections': ['EOF', 'right_connection_to_superview', 'connection_to_view']
+    
     'right_connection_to_superview' : [
-      ['connection | EOF', '/* connect to superview */']
+      ['connection | EOF', """
+                           /* connect to superview */
+                           $$ = [$1,'right-superview-connect']
+                           """]
     ]
+    
     'connection_to_view': [
-      ['connection view ', '/* should add both, connection and view constraints */']
-      ['connection view more_connections', '/* should add both, connection and view constraints */']
-      ]
+      ['connection view ', 
+                """
+                /* should add both, connection and view constraints */
+                $$ = ['connection_to_view',$1,$2]
+                """]
+      ['connection view more_connections', 
+                """
+                /* should add both, connection and view constraints */
+                ['connection_to_view',$1,$2,$3]
+                """]
+    ]
 
     'connection': [
-      ['', '/* space equals 0 */']
-      ['-', '/* default space constraints */']
-      ['- predicateList -', '/* space has predicateList constraints */']
+      ['', """
+           /* space equals 0 */
+           $$ = ['connection=0'] 
+           """]
+      ['-', """
+            /* default space constraints */
+            $$ = ['default connection']
+            """]
+      ['- predicateList -', 
+            """
+            /* connection has predicateList constraints */
+            $$ = ['connection-with-predicates', $2]
+            """]
     ] 
     
     'predicateList': ['simplePredicate','predicateListWithParens']
     'simplePredicate': ['metricName','number']
-    'predicateListWithParens': ['', '( predicate more_predicates )']
-    'more_predicates':['', ', predicate more_predicates']
+    'predicateListWithParens': [
+      ['', """
+            /* no predicates */
+            $$ = ['no predicates'];
+           """] 
+      ['( predicate more_predicates )', 
+           """
+           /* predicate */
+           $$ = ['predicate',$2, $3];
+           """]
+    ]
+    'more_predicates':[
+      ['', '']
+      [', predicate more_predicates', "$$ = $2"]
+    ]
     'predicate': ['objectOfPredicate','relation objectOfPredicate', 'objectOfPredicate @ priority', 'relation objectOfPredicate @ priority']
     
     'relation': [
