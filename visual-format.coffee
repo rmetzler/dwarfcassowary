@@ -26,14 +26,27 @@ grammar=
     ]
   startSymbol: "visualFormatString", 
   bnf:
-    'visualFormatString': ['orientation left_connection_to_superview view more_connections']
+    'visualFormatString': [
+      ['orientation left_connection_to_superview view more_connections', 
+      """
+      /* create Solver */
+      $$ = ['solver',$1,$2,$3,$4 ];
+      console.log($$);
+      """
+      ]
+    ]
     'orientation': [
-      ['',   "/* x and width */"] 
-      ['H:', "/* x and width */"] 
-      ['V:', "/* y and height */"]
+      ['',   """/* x and width */"""] 
+      ['H:', """/* x and width */"""] 
+      ['V:', """/* y and height */"""]
     ]
     'view': [
-      ['[ viewName predicateListWithParens ]', "/* find morph viewName and add Constraints */"]
+      ['[ viewName predicateListWithParens ]', 
+            """
+            /* find morph viewName and add Constraints */
+            console.log('viewName = ' + $2);
+            $$ = ['view',$2,$3]
+            """]
     ]
     'left_connection_to_superview' : [
       ['', '/* no constraint */']
@@ -61,15 +74,37 @@ grammar=
     'predicate': ['objectOfPredicate','relation objectOfPredicate', 'objectOfPredicate @ priority', 'relation objectOfPredicate @ priority']
     
     'relation': [
-      ['==', '/* equal*/']
-      ['<=', '/* greater or equal*/']
-      ['>=', '/* greater or equal*/']
+      ['==', '''
+              /* equal*/
+              $$ = '==';
+              ''']
+      ['<=', '''
+              /* greater or equal*/
+             $$ = '<='
+             ''']
+
+      ['>=', '''
+              /* greater or equal*/
+             $$ = '>=' 
+             ''']
     ]
+
     'objectOfPredicate': ['constant','viewName']
     'priority': ['metricName', 'number']
     'constant': ['metricName', 'number']
-    'viewName': [['IDENTIFIER', "$$ = 'yytext';"]]
-    'number'  : [['NUMBER', "$$ = 'yytext'; /*number*/"]]
+    'viewName': [
+      ['IDENTIFIER', """
+                      $$ = yytext;
+                      //console.log(yytext);
+                      """]
+    ]
+    'number'  : [
+      ['NUMBER', 
+                """
+                $$ = yytext; /*number*/
+                //console.log(yytext);
+                """]
+    ]
 
 ###
     <viewName>
@@ -87,7 +122,7 @@ fs = require('fs')
 
 parser = new jison.Parser(grammar)
 parserSource = parser.generate()
-fs.writeFileSync('visual-format-parser',parserSource, encoding='utf8')
+fs.writeFileSync('visual-format-parser.js',parserSource, encoding='utf8')
 #console.log parserSource
 
 #console.log parser
@@ -104,5 +139,5 @@ parser.parse '[button1(==button2)]'
 parser.parse '[flexibleButton(>=70,<=100)]'
 parser.parse '|-[find]-[findNext]-[findField(>=20)]'
 parser.parse '|-[a]-[b]-[c]-|'
-
+#eval parserSource
 #parser.lexer = new Lexer(lexData);
