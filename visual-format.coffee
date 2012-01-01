@@ -83,10 +83,11 @@ grammar=
     As parsed by strtod_l, with the C locale.
 ###
 
-
+fs = require('fs')
 
 parser = new jison.Parser(grammar)
 parserSource = parser.generate()
+fs.writeFileSync('visual-format-parser',parserSource, encoding='utf8')
 #console.log parserSource
 
 #console.log parser
