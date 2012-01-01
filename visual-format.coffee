@@ -35,17 +35,17 @@ grammar=
     'view': [
       ['[ viewName predicateListWithParens ]', "/* find morph viewName and add Constraints */"]
     ]
-    'more_connections': ['EOF', 'right_connection_to_superview', 'connection_to_view']
     'left_connection_to_superview' : [
       ['', '/* no constraint */']
       ['| connection', '/* connect to superview */']
     ]
+    'more_connections': ['EOF', 'right_connection_to_superview', 'connection_to_view']
     'right_connection_to_superview' : [
       ['connection | EOF', '/* connect to superview */']
     ]
     'connection_to_view': [
-      ['connection view EOF', '/* should add both, connection and view constraints */']
-      ['connection view connection_to_view', '/* should add both, connection and view constraints */']
+      ['connection view ', '/* should add both, connection and view constraints */']
+      ['connection view more_connections', '/* should add both, connection and view constraints */']
       ]
 
     'connection': [
@@ -91,7 +91,7 @@ fs.writeFileSync('visual-format-parser',parserSource, encoding='utf8')
 #console.log parserSource
 
 #console.log parser
-parser.parse('[button]')
+parser.parse '[button]'
 parser.parse '[button]-[textfield]'
 parser.parse '|-[button]-|'
 parser.parse '|[button]|'
@@ -103,5 +103,6 @@ parser.parse '[button(100@20)]'
 parser.parse '[button1(==button2)]'
 parser.parse '[flexibleButton(>=70,<=100)]'
 parser.parse '|-[find]-[findNext]-[findField(>=20)]'
+parser.parse '|-[a]-[b]-[c]-|'
 
 #parser.lexer = new Lexer(lexData);
