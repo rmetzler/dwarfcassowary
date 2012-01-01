@@ -30,7 +30,7 @@ grammar=
       ['orientation left_connection_to_superview view more_connections', 
             """
             /* create Solver */
-            $$ = ['create solver',$1,$2,$3,$4 ];
+            $$ = ['add constraints',$1,$2,$3,$4 ];
             console.log($$);
             """
       ]
@@ -53,8 +53,8 @@ grammar=
       ['[ viewName predicateListWithParens ]', 
             """
             /* find morph viewName and add Constraints */
-            console.log('viewName = ' + $2);
-            console.log('predicates = ' + $3);
+            //console.log('viewName = ' + $2);
+            //console.log('predicates = ' + $3);
             $$ = ['view',$2,$3];
             """]
     ]
@@ -81,6 +81,7 @@ grammar=
               """]
       ['connection_to_view',
               """
+              //console.log('connection_to_view = ' + $1);
               $$ = [$1];
               """]
     ]
