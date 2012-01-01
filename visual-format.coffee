@@ -94,6 +94,7 @@ fs.writeFileSync('visual-format-parser',parserSource, encoding='utf8')
 parser.parse('[button]')
 parser.parse '[button]-[textfield]'
 parser.parse '|-[button]-|'
+parser.parse '|[button]|'
 parser.parse '|-[button (>= 50) ]-|'
 parser.parse '|-50-[orchidbox]-50-|'
 parser.parse 'V:[topField]-10-[bottomField]'
