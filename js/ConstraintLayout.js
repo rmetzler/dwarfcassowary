@@ -59,6 +59,9 @@ lively.morphic.Layout.Layout.subclass('ConstraintLayout',
             return;
         }
         var solver = new ClSimplexSolver(); 
+        
+        solver.addStay(this.extent.x);
+        solver.addStay(this.extent.y);
 
         solver.addEditVar(this.extent.x);
         solver.addEditVar(this.extent.y);

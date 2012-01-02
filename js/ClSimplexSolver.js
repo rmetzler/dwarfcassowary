@@ -134,6 +134,7 @@ ClTableau.subclass('ClSimplexSolver', 'default category', {
     return this.removeEditVarsTo(0);
   },
   removeEditVarsTo: function(n /*int*/) {
+    console.log("removeEditVars("+n+")")
     try {
       var that = this;
       this._editVarMap.each(function(v, cei) {

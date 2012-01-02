@@ -26,7 +26,7 @@
     }),
     
     margin_A_plus_B_plus_C: (function() {
-      var width = new ClVariable("width",100);
+      var width = new ClVariable(100);
       var a = {}, b = {}, c = {};
       a.width = new ClVariable("a.width",50);
       b.width = new ClVariable("b.width",50);
@@ -39,7 +39,8 @@
       var margin = 5;
 
       var solver = new ClSimplexSolver();
-      solver.addEditVar(width, ClStrength.required);
+      solver.addStay(width);
+      solver.addEditVar(width);
 
       // b.x = a.x + a.width + margin
       solver.addConstraint(new ClLinearEquation( margin, a.x) );
@@ -50,7 +51,20 @@
       solver.addConstraint(new ClLinearEquation(a.width, b.width));
       solver.addConstraint(new ClLinearEquation(b.width, c.width));
 
-      width.value();
+      
+      console.log("vor edit");
+      console.log(width.value());
+      console.log(a.x.value() + " - " + a.width.value());
+      console.log(b.x.value() + " - " + b.width.value());
+      console.log(c.x.value() + " - " + c.width.value());
+      
+      solver.beginEdit();
+      console.log("edit: width = 170");
+      solver.suggestValue(width, 170);
+      solver.endEdit();
+      
+      console.log("nach edit");
+      console.log(width.value());
       console.log(a.x.value() + " - " + a.width.value());
       console.log(b.x.value() + " - " + b.width.value());
       console.log(c.x.value() + " - " + c.width.value());
