@@ -82,6 +82,11 @@
       var c = new ConstraintLayoutInfo($morph('c'));
       
       var margin = 5;
+      
+      layout.addConstraint(new ClLinearEquation(a.position.y, margin) );
+      layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(a.position.y, a.extent.y), margin*2), layout.extent.y) );
+
+
 
       // b.x = a.x + a.width + margin
       layout.addConstraint(new ClLinearEquation( margin, a.position.x) );

@@ -17,6 +17,7 @@ Object.subclass('ConstraintLayoutInfo',
 
     setMorph: function(aMorph) {
         this.morph = aMorph;
+        this.morph.setLayoutConstraintInfo(this);
     },
     getMorph: function() {
         return this.morph;
