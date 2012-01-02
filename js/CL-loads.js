@@ -32,7 +32,12 @@ function block(millis) {
 'ClSimplexSolver.js',
 'CL.js',
 'Timer.js',
-'ClTests.js'
+
+'ClTests.js',
+
+'ConstraintLayout.js',
+'ClMyTest.js',
+
 ].forEach (function (file) {
   JSLoader.loadJs(urlPrefix + file); //, function(){}, true);
   // JSLoader doesn't work properly in sync mode,

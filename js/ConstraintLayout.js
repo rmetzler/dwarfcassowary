@@ -1,16 +1,16 @@
 Object.subclass('ConstraintLayoutInfo',
 'default category', {
-    initialize: function(aMorph) {
+    initialize: function(aMorph, posX, posY, extX, extY /* all are ClVariables */) {
         this.setMorph(aMorph);
         var extent = aMorph.getExtent(),
             position = aMorph.getPosition();
         this.position = {
-            x: new ClVariable(position.x),
-            y: new ClVariable(position.y)
+            x: posX || new ClVariable(position.x),
+            y: posY || new ClVariable(position.y)
         };
         this.extent = {
-            x: new ClVariable(extent.x),
-            y: new ClVariable(extent.y)
+            x: extX || new ClVariable(extent.x),
+            y: extY || new ClVariable(extent.y)
         };
     },
 
@@ -24,22 +24,20 @@ Object.subclass('ConstraintLayoutInfo',
 
 
     updateThisMorph: function() {
-        var morph = this.getMorph();
+
         var newExtent = pt(
             this.extent.x.value(),
-            this.extent.y.value())
+            this.extent.y.value());
+        var newPosition = pt(
+                this.position.x.value(),
+                this.position.y.value());
+                
+        var morph = this.getMorph();
         //alert('updateThisMorph ' + this.getMorph().getExtent() + ' -> ' + newExtent);
+
         morph.setExtent(newExtent);
-        morph.setPosition(pt(
-            this.position.x.value(),
-            this.position.y.value()));
+        morph.setPosition(newPosition);
     },
-
-
-
-
-
-
 
 });
 
