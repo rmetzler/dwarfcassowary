@@ -124,7 +124,7 @@ ClObject.subclass('ClTests', 'default category', {
     }
   },
   multiedit: function() {
-    try {
+//    try {
       var fOkResult = true;
       var x = new ClVariable("x");
       var y = new ClVariable("y");
@@ -147,11 +147,11 @@ ClObject.subclass('ClTests', 'default category', {
       print("w = " + w.value() + "; h = " + h.value());
       fOkResult = fOkResult && CL.approx(x, 50) && CL.approx(y, 60) && CL.approx(w, 30) && CL.approx(h, 40);
       return (fOkResult);
-    }
-    catch (err /*ExCLRequiredFailure*/){
-      print("Success -- got the exception");
-      return (true);
-    }
+//    }
+//    catch (err /*ExCLRequiredFailure*/){
+//      print("Success -- got the exception");
+//      return (true);
+//    }
   },
   inconsistent3: function() {
     try {
