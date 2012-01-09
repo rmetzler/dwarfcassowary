@@ -76,7 +76,7 @@ grammar=
               """],
       ['right_connection_to_superview',
               """
-              $$ = ['right_connection_to_superview', $1];
+              $$ = $1;
               """]
       ['connection_to_view',
               """
@@ -238,8 +238,8 @@ grammar=
 
 class ASTWalker
   translateAST: (ast, seperator='') ->
-    console.log 'JSON.stringify ast'
-    console.log (JSON.stringify ast) + '\n'
+    #console.log 'JSON.stringify ast'
+    #console.log (JSON.stringify ast) + '\n'
 
     ctx = {}
     buffer = []
@@ -250,13 +250,15 @@ class ASTWalker
     buffer.join(seperator)
   
   translateNode: (node, ctx) ->
-    console.log "current node: ", JSON.stringify node
+    #console.log "current node: ", JSON.stringify node
     if node instanceof Array
       translated = @[node[0]](node, ctx)
+      ###
       console.log """
       input: #{JSON.stringify node}
       translated: #{translated}
       """
+      ###
       return translated
     else
       "translateNode: #{node}"
@@ -264,55 +266,76 @@ class ASTWalker
 
   orientation: (node, ctx) ->
     """
-    axis = '#{node[1]};'
+    var axis = '#{node[1]}';
     """
   
   left_superview_connect: (node) ->
     """
-    leftview = helper_getParent(); /*TODO*/
+    /* left_superview_connect */
+    layout.addConstraint(new ClLinearEquation( current.position[axis] , margin) );
     """
-
-  right_connection_to_superview: (node) ->
+  
+  right_superview_connect: (node) ->
     """
-    rightview = helper_getParent(); /*TODO*/
+    #{@translateNode node[1]}
+    layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(current.position[axis], current.extent[axis]), margin), layout.extent[axis]) );    
     """
 
   view: (node, ctx) ->
-    console.log "view", node[1], node[2]
+    #console.log "view", node[1], node[2]
     viewname = node[1]
     """
-    var current_morph = $morph('#{viewname}'); 
+    var morph = $morph('#{viewname}')
+    var current = morph.getConstraintInfo || new ConstraintInfo(morph); 
     #{@translateNode node[2], ctx}
     """
     
   connection_to_view: (node) ->
     buffer = """
-    #{@translateNode node[1]}
-    #{@translateNode node[2]}    
+      /* connection_to_view start */
+      var prev = current;
+      #{@translateNode node[1]}
+      #{@translateNode node[2]}
+      
+      layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(prev.position[axis], prev.extent[axis]), margin), current.position[axis]) );    
     """
-    if node[3]
-      buffer += @translateNode node[3] 
     
-    console.log "connection_to_view", node
+    if node[3]
+      buffer += """
+        #{@translateNode node[3]} 
+      """
+
+    buffer += """
+    
+      /* connection_to_view end */
+    """
+
     buffer
     
   connection_default: ->
-    "connection_length = 12"
+    """
+    
+    var margin = 12;
+    """
     
   predicates_no: () ->
-    "/*no more predicates for current view*/"
+    "/* no more predicates for current view */"
 
   predicate: (node) ->
     """
     predicate = #{@translateNode(node[1])}
-    /* TODO: make constraint */
-    current_morph.addConstraint(predicate.rel, predicate.obj);
+    /* current.extent.x == predicate.c_info.extent.x */
+    /* TODO enable LEQ and GEQ */
+    layout.addConstraint(new ClLinearEquation( current.extent[axis] , predicate.c_info.extent[axis]) );
     """
-  rel_and_obj: (node) ->   
+  rel_and_obj: (node) ->
+    rel = @relation_map[node[1]]
+    morph = @translateNode node[2]   
     """
     {
-      rel:#{@relation_map[node[1]]},
-      obj: #{@translateNode node[2]}
+      rel:#{rel},
+      morph: #{morph},
+      c_info: this.morph.getConstraintInfo() || new ConstraintInfo(this.morph)
     }
     """  
   
@@ -351,11 +374,31 @@ fs.writeFileSync('visual-format-parser.js',parserSource, encoding='utf8')
 
 #console.log parser.parse('|-[a]-[b(==a)]-|')
 
+"""
+var a = new ConstraintLayoutInfo($morph('a'));
+var b = new ConstraintLayoutInfo($morph('b'));
+var c = new ConstraintLayoutInfo($morph('c'));
+
+var margin = 12;
+
+layout.addConstraint(new ClLinearEquation(a.position.y, margin) );
+layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(a.position.y, a.extent.y), margin*2), layout.extent.y) );
+
+// b.x = a.x + a.width + margin
+layout.addConstraint(new ClLinearEquation( margin, a.position.x) );
+layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(a.position.x, a.extent.x), margin), b.position.x) );
+layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(b.position.x, b.extent.x), margin), c.position.x) );
+layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(c.position.x, c.extent.x), margin), layout.extent.x) );
+"""
+
+
 ast = parser.parse('|-[a]-[b(==a)]-|')
 fs.writeFileSync('./js/example.json',(JSON.stringify ast), encoding='utf8')
 
 compiled = new ASTWalker().translateAST(ast, '\n')
 
-console.log ""
-console.log "----------"
-console.log "compiled: " + compiled
+console.log """
+----------
+
+#{compiled}
+"""
