@@ -28,7 +28,7 @@ grammar=
       ['orientation left_connection_to_superview view more_connections', 
             """
             /* create Solver */
-            $$ = [$1,$2,$3,$4 ];
+            $$ = [$1,$3,$2,$4 ];
             //console.log($$);
             return $$;
             """
@@ -272,6 +272,7 @@ class ASTWalker
   left_superview_connect: (node) ->
     """
     /* left_superview_connect */
+    var margin = margin || 12;
     layout.addConstraint(new ClLinearEquation( current.position[axis] , margin) );
     """
   
@@ -285,8 +286,8 @@ class ASTWalker
     #console.log "view", node[1], node[2]
     viewname = node[1]
     """
-    var morph = $morph('#{viewname}')
-    var current = morph.getConstraintInfo || new ConstraintInfo(morph); 
+    var morph = $morph('#{viewname}');
+    var current = morph.getLayoutConstraintInfo() || new ConstraintLayoutInfo(morph); 
     #{@translateNode node[2], ctx}
     """
     
@@ -326,7 +327,14 @@ class ASTWalker
     predicate = #{@translateNode(node[1])}
     /* current.extent.x == predicate.c_info.extent.x */
     /* TODO enable LEQ and GEQ */
-    layout.addConstraint(new ClLinearEquation( current.extent[axis] , predicate.c_info.extent[axis]) );
+    layout.addConstraint(
+      new ClLinearEquation(
+        current.extent[axis], 
+        new ClLinearExpression(
+          predicate.c_info.extent[axis]
+        )
+      )
+    );
     """
   rel_and_obj: (node) ->
     rel = @relation_map[node[1]]
@@ -335,7 +343,7 @@ class ASTWalker
     {
       rel:#{rel},
       morph: #{morph},
-      c_info: this.morph.getConstraintInfo() || new ConstraintInfo(this.morph)
+      c_info: #{morph}.getLayoutConstraintInfo() || new ConstraintLayoutInfo(#{morph})
     }
     """  
   
