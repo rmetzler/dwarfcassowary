@@ -72,7 +72,7 @@
       return true;
     }),
     
-    constraint_layout: (function() {
+/*    constraint_layout: (function() {
       
       var layout = new ConstraintLayout($morph('constraintbox'));
       $morph('constraintbox').setLayouter(layout);
@@ -81,12 +81,10 @@
       var b = new ConstraintLayoutInfo($morph('b'));
       var c = new ConstraintLayoutInfo($morph('c'));
       
-      var margin = 5;
+      var margin = 12;
       
       layout.addConstraint(new ClLinearEquation(a.position.y, margin) );
       layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(a.position.y, a.extent.y), margin*2), layout.extent.y) );
-
-
 
       // b.x = a.x + a.width + margin
       layout.addConstraint(new ClLinearEquation( margin, a.position.x) );
@@ -104,6 +102,35 @@
       
       return true;
     }),
+
+    cocoa_example: (function() {
+      
+      var layout = new ConstraintLayout($morph('cocoa_example'));
+      $morph('constraintbox').setLayouter(layout);
+      
+      var a = new ConstraintLayoutInfo($morph('cocoa_example_a'));
+      var b = new ConstraintLayoutInfo($morph('cocoa_example_b'));
+      
+      var margin = 12;
+      
+      layout.addConstraint(new ClLinearEquation(a.position.y, margin) );
+      layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(a.position.y, a.extent.y), margin*2), layout.extent.y) );
+
+      layout.addConstraint(new ClLinearEquation(b.position.y, margin) );
+      layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(b.position.y, b.extent.y), margin*2), layout.extent.y) );
+
+      // b.x = a.x + a.width + margin
+      layout.addConstraint(new ClLinearEquation( margin, a.position.x) );
+      layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(a.position.x, a.extent.x), margin), b.position.x) );
+      layout.addConstraint(new ClLinearEquation(CL.Plus(CL.Plus(b.position.x, b.extent.x), margin), layout.extent.x) );
+      
+      console.log("Rectangle.width: " + layout.extent.x.value());
+      console.log(a.position.x.value() + " - " + a.extent.x.value());
+      console.log(b.position.x.value() + " - " + b.extent.x.value());
+      
+      return true;
+    }),
+*/
   };
 
   for (d in tests) {
