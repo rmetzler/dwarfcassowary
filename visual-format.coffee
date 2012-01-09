@@ -1,8 +1,6 @@
-jison = (require 'jison')#.Jison
-#lexer = 
+jison = (require 'jison')
 
-console.log jison
-#lexData=
+
 grammar=
   lex: 
     "rules": [
@@ -30,23 +28,24 @@ grammar=
       ['orientation left_connection_to_superview view more_connections', 
             """
             /* create Solver */
-            $$ = ['add constraints',$1,$2,$3,$4 ];
-            console.log($$);
+            $$ = [$1,$2,$3,$4 ];
+            //console.log($$);
+            return $$;
             """
       ]
     ]
     'orientation': [
       ['',  """
             /* x and width */
-            $$ = ['default orientation'];
+            $$ = ['orientation', 'x'];
             """] 
       ['H:',"""
             /* x and width */
-            $$ = ['horizontal orientation'];
+            $$ = ['orientation', 'x'];
             """] 
       ['V:',"""
             /* y and height */
-            $$ = ['vertical orientation'];
+            $$ = ['orientation', 'y'];
             """]
     ]
     'view': [
@@ -62,12 +61,12 @@ grammar=
     'left_connection_to_superview' : [
       ['', """
            /* no constraint */
-           $$ = 'no left-superview-connect';
+           $$ = 'no_left_superview_connect';
            """]
       ['| connection', 
            """
            /* connect to superview */
-           $$ = ['left-superview-connect', $2];
+           $$ = ['left_superview_connect', $2];
            """]
     ]
     
@@ -77,19 +76,19 @@ grammar=
               """],
       ['right_connection_to_superview',
               """
-              $$ = [$1];
+              $$ = ['right_connection_to_superview', $1];
               """]
       ['connection_to_view',
               """
               //console.log('connection_to_view = ' + $1);
-              $$ = [$1];
+              $$ = $1;
               """]
     ]
     
     'right_connection_to_superview' : [
       ['connection | EOF', """
                            /* connect to superview */
-                           $$ = [$1,'right-superview-connect'];
+                           $$ = ['right_superview_connect', $1];
                            """]
     ]
     
@@ -97,7 +96,7 @@ grammar=
       ['connection view ', 
                 """
                 /* should add both, connection and view constraints */
-                $$ = ['connection_to_view',$1,$2];
+                $$ = ['connection_to_view', $1, $2];
                 """]
       ['connection view more_connections', 
                 """
@@ -109,16 +108,16 @@ grammar=
     'connection': [
       ['', """
            /* space equals 0 */
-           $$ = ['connection=0']; 
+           $$ = ['connection_no_space']; 
            """]
       ['-', """
             /* default space constraints */
-            $$ = ['default connection'];
+            $$ = ['connection_default'];
             """]
       ['- predicateList -', 
             """
             /* connection has predicateList constraints */
-            $$ = ['connection-with-predicates', $2];
+            $$ = ['connection_with_predicates', $2];
             """]
     ] 
     
@@ -145,7 +144,7 @@ grammar=
     'predicateListWithParens': [
       ['', """
            /* no predicates */
-           $$ = ['no predicates'];
+           $$ = ['predicates_no'];
            """] 
       ['( predicate more_predicates )', 
            """
@@ -166,19 +165,19 @@ grammar=
     'predicate': [
       ['objectOfPredicate', 
                 """
-                $$ = ['predicate', $1];
+                $$ = ['obj_of_predicate', $1];
                 """]
       ['relation objectOfPredicate', 
                 """
-                $$ = ['relation+predicate', $1, $2];
+                $$ = ['rel_and_obj', $1, $2];
                 """] 
       ['objectOfPredicate @ priority',
                 """
-                $$ = ['predicate @ priority',$1,$3];
+                $$ = ['obj_at_priority',$1,$3];
                 """] 
       ['relation objectOfPredicate @ priority',
                 """
-                $$ = ['relation+predicate @ priority', $1, $2, $4];
+                $$ = ['rel_and_obj_at_priority', $1, $2, $4];
                 """]
     ]
     
@@ -199,8 +198,8 @@ grammar=
     ]
 
     'objectOfPredicate': [
-      ['constant',""" $$ = [$1]; """]
-      ['viewName',""" $$ = [$1]; """]
+      ['constant',""" $$ = ['obj_of_predicate', 'constant', $1]; """]
+      ['viewName',""" $$ = ['obj_of_predicate', 'viewname', $1]; """]
     ]
     'priority': [
       ['metricName',""" $$ = [$1]; """]
@@ -236,6 +235,96 @@ grammar=
     As parsed by strtod_l, with the C locale.
 ###
 
+
+class ASTWalker
+  translateAST: (ast, seperator='') ->
+    console.log 'JSON.stringify ast'
+    console.log (JSON.stringify ast) + '\n'
+
+    ctx = {}
+    buffer = []
+    
+    for node in ast
+      buffer.push @translateNode node, ctx
+    
+    buffer.join(seperator)
+  
+  translateNode: (node, ctx) ->
+    console.log "current node: ", JSON.stringify node
+    if node instanceof Array
+      translated = @[node[0]](node, ctx)
+      console.log """
+      input: #{JSON.stringify node}
+      translated: #{translated}
+      """
+      return translated
+    else
+      "translateNode: #{node}"
+      #@[node](node, ctx)
+
+  orientation: (node, ctx) ->
+    """
+    axis = '#{node[1]};'
+    """
+  
+  left_superview_connect: (node) ->
+    """
+    leftview = helper_getParent(); /*TODO*/
+    """
+
+  right_connection_to_superview: (node) ->
+    """
+    rightview = helper_getParent(); /*TODO*/
+    """
+
+  view: (node, ctx) ->
+    console.log "view", node[1], node[2]
+    viewname = node[1]
+    """
+    var current_morph = $morph('#{viewname}'); 
+    #{@translateNode node[2], ctx}
+    """
+    
+  connection_to_view: (node) ->
+    buffer = """
+    #{@translateNode node[1]}
+    #{@translateNode node[2]}    
+    """
+    if node[3]
+      buffer += @translateNode node[3] 
+    
+    console.log "connection_to_view", node
+    buffer
+    
+  connection_default: ->
+    "connection_length = 12"
+    
+  predicates_no: () ->
+    "/*no more predicates for current view*/"
+
+  predicate: (node) ->
+    """
+    predicate = #{@translateNode(node[1])}
+    /* TODO: make constraint */
+    current_morph.addConstraint(predicate.rel, predicate.obj);
+    """
+  rel_and_obj: (node) ->   
+    """
+    {
+      rel:#{@relation_map[node[1]]},
+      obj: #{@translateNode node[2]}
+    }
+    """  
+  
+  relation_map:
+    "==": "CL.EQ"
+    "<=": "CL.LEQ"
+    "=>": "CL.GEQ"
+
+  obj_of_predicate: (node) ->
+    """
+    $morph('#{node[2]}')
+    """
 fs = require('fs')
 
 parser = new jison.Parser(grammar)
@@ -244,18 +333,29 @@ fs.writeFileSync('visual-format-parser.js',parserSource, encoding='utf8')
 #console.log parserSource
 
 #console.log parser
-parser.parse '[button]'
-parser.parse '[button]-[textfield]'
-parser.parse '|-[button]-|'
-parser.parse '|[button]|'
-parser.parse '|-[button (>= 50) ]-|'
-parser.parse '|-50-[orchidbox]-50-|'
-parser.parse 'V:[topField]-10-[bottomField]'
-parser.parse '[maroonView][oceanView]'
-parser.parse '[button(100@20)]'
-parser.parse '[button1(==button2)]'
-parser.parse '[flexibleButton(>=70,<=100)]'
-parser.parse '|-[find]-[findNext]-[findField(>=20)]'
-parser.parse '|-[a]-[b]-[c]-|'
+#parser.parse '[button]'
+#parser.parse '[button]-[textfield]'
+#parser.parse '|-[button]-|'
+#parser.parse '|[button]|'
+#parser.parse '|-[button (>= 50) ]-|'
+#parser.parse '|-50-[orchidbox]-50-|'
+#parser.parse 'V:[topField]-10-[bottomField]'
+#parser.parse '[maroonView][oceanView]'
+#parser.parse '[button(100@20)]'
+#parser.parse '[button1(==button2)]'
+#parser.parse '[flexibleButton(>=70,<=100)]'
+#parser.parse '|-[find]-[findNext]-[findField(>=20)]'
+#parser.parse '|-[a]-[b]-[c]-|'
 #eval parserSource
 #parser.lexer = new Lexer(lexData);
+
+#console.log parser.parse('|-[a]-[b(==a)]-|')
+
+ast = parser.parse('|-[a]-[b(==a)]-|')
+fs.writeFileSync('./js/example.json',(JSON.stringify ast), encoding='utf8')
+
+compiled = new ASTWalker().translateAST(ast, '\n')
+
+console.log ""
+console.log "----------"
+console.log "compiled: " + compiled
