@@ -17,7 +17,7 @@ Object.subclass('ConstraintLayoutInfo',
 
     setMorph: function(aMorph) {
         this.morph = aMorph;
-        this.morph.setLayoutConstraintInfo(this);
+        aMorph.setLayoutConstraintInfo(this);
     },
     getMorph: function() {
         return this.morph;
@@ -30,8 +30,8 @@ Object.subclass('ConstraintLayoutInfo',
             this.extent.x.value(),
             this.extent.y.value());
         var newPosition = pt(
-                this.position.x.value(),
-                this.position.y.value());
+            this.position.x.value(),
+            this.position.y.value());
                 
         var morph = this.getMorph();
         //alert('updateThisMorph ' + this.getMorph().getExtent() + ' -> ' + newExtent);
@@ -107,6 +107,34 @@ lively.morphic.Layout.Layout.subclass('ConstraintLayout',
         $super(aMorph, aSubmorph, allSubmorphs);
     },
     onSubmorphResized: function(aMorph, aSubmorph, allSubmorphs) {
+        
+        console.log('onSubmorphResized');
+        
+        var lcInfo = aSubmorph.getLayoutConstraintInfo()
+        var solver = new ClSimplexSolver(); 
+
+        solver.addStay(lcInfo.extent.x);
+        solver.addStay(lcInfo.extent.y);
+
+        solver.addEditVar(lcInfo.extent.x);
+        solver.addEditVar(lcInfo.extent.y);
+
+        this.constraints.forEach(function(ea) {
+            solver.addConstraint(ea);
+        });
+
+        solver.beginEdit();
+        var extent = aSubmorph.getExtent();
+        var lcInfo = aSubmorph.getLayoutConstraintInfo()
+        
+        solver.suggestValue(lcInfo.extent.x, extent.x);
+        solver.suggestValue(lcInfo.extent.y, extent.y);
+        
+        solver.resolve();
+        
+        solver.endEdit(); 
+        
+        
         aMorph.applyLayout();
         // TODO two entry points for applyLayout: resize submorph or resize container
     },
