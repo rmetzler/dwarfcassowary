@@ -87,7 +87,12 @@ lively.morphic.Layout.Layout.subclass('ConstraintLayout',
         //solver.resolve();
         solver.endEdit();
         
-        submorphs.forEach(function(ea) { ea.getLayoutConstraintInfo().updateThisMorph(); });
+        submorphs.forEach( function(ea) { 
+            var lcInfo = ea.getLayoutConstraintInfo()
+            if (lcInfo) {
+                lcInfo.updateThisMorph(); 
+            }
+        });
     },
 
 
@@ -142,5 +147,11 @@ lively.morphic.Layout.Layout.subclass('ConstraintLayout',
     addConstraint: function(aConstraint) {
         this.constraints.push(aConstraint);
     },
+    
+    visualFormat: function(vfstring) {
+        var compiled = new VFCompiler().compile(vfstring);
+        compiled = compiled.replace(/layout./g, "this.")
+        eval(compiled);
+    }
 
 });

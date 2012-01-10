@@ -1,7 +1,7 @@
-parser = require? 'visual-format-parser.js'
-class Compiler
+#VFParser = require? 'visual-format-parser.js'
+class VFCompiler
   compile: (string) ->
-    translateAST(parser.parse string, '\n')
+    @translateAST(VFParser.parse string, '\n')
     
   translateAST: (ast, seperator='') ->
     #console.log 'JSON.stringify ast'

@@ -240,7 +240,7 @@ grammar=
 fs = require('fs')
 
 parser = new jison.Parser(grammar)
-parserSource = parser.generate()
+parserSource = parser.generate({moduleName: "VFParser"})
 fs.writeFileSync('visual-format-parser.js',parserSource, encoding='utf8')
 #console.log parserSource
 
